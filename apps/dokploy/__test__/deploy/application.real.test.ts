@@ -98,6 +98,7 @@ mock.module("@dokploy/server/services/deployment", () => ({
 	createDeployment: createDeploymentMock,
 	updateDeploymentStatus: updateDeploymentStatusMock,
 	updateDeployment: updateDeploymentMock,
+	writeDeploymentErrorLog: jest.fn(),
 }));
 
 mock.module("@dokploy/server/utils/notifications/build-success", () => ({

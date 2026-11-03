@@ -1,41 +1,30 @@
+import { readdirSync } from "node:fs";
 import path from "node:path";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { defineConfig } from "vitest/config";
+import { BUN_DIRS, BUN_FILES, VITEST_ONLY } from "./runners";
+
+const bunOwnedFiles = () =>
+	[
+		...BUN_DIRS.flatMap((dir) =>
+			readdirSync(path.resolve(__dirname, "..", dir), { recursive: true })
+				.map(String)
+				.filter((file) => /\.test\.tsx?$/.test(file))
+				.map((file) => `${dir}${file}`),
+		),
+		...BUN_FILES,
+	].filter((file) => !VITEST_ONLY.includes(file));
 
 export default defineConfig({
 	test: {
 		include: ["__test__/**/*.test.ts"], // Incluir solo los archivos de test en el directorio __test__
-		// Directories ported to `bun test` - see the test:bun script. Porting a
-		// directory means moving it from here into that script's list.
+		// Everything bun test owns - see runners.ts, which both runners read.
+		// Listed per file so the VITEST_ONLY suites inside bun directories stay here.
 		exclude: [
 			"**/node_modules/**",
 			"**/dist/**",
 			"**/.docker/**",
-			"**/__test__/logs/**",
-			"**/__test__/registry/**",
-			"**/__test__/requests/**",
-			"**/__test__/api/**",
-			"**/__test__/cluster/**",
-			"**/__test__/templates/**",
-			"**/__test__/backups/**",
-			"**/__test__/services/**",
-			// utils is split per file: remote-stream stays here because when a
-			// piped-child test's promise never settles, `bun test` spins at 100%
-			// CPU instead of timing it out (Bun 1.3.11, 1.3.14 and 1.4.2 alike), so
-			// a regression would hang CI rather than fail it. vitest fails it in 5s.
-			"**/__test__/utils/backups.test.ts",
-			"**/__test__/utils/hostname-validation.test.ts",
-			"**/__test__/utils/log-type.test.ts",
-			"**/__test__/queues/**",
-			"**/__test__/drop/**",
-			"**/__test__/traefik/**",
-			"**/__test__/server/**",
-			"**/__test__/permissions/**",
-			"**/__test__/wss/**",
-			"**/__test__/dns/**",
-			"**/__test__/compose/**",
-			"**/__test__/git-provider/**",
-			"**/__test__/deploy/**",
+			...bunOwnedFiles().map((file) => `**/${file}`),
 		],
 		pool: "forks",
 		setupFiles: [path.resolve(__dirname, "setup.ts")],

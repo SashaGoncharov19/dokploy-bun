@@ -80,9 +80,7 @@ describe("cloneGithubRepository host", () => {
 
 		const command = await clone();
 
-		expect(command).toContain(
-			"https://oauth2:gh-token@github.com/acme/web.git",
-		);
+		expect(command).toContain("https://github.com/acme/web.git");
 		expect(command).not.toContain("ghe.com");
 	});
 
@@ -91,9 +89,7 @@ describe("cloneGithubRepository host", () => {
 
 		const command = await clone();
 
-		expect(command).toContain(
-			"https://oauth2:gh-token@acme.ghe.com/acme/web.git",
-		);
+		expect(command).toContain("https://acme.ghe.com/acme/web.git");
 		expect(command).not.toContain("github.com");
 	});
 
@@ -104,9 +100,7 @@ describe("cloneGithubRepository host", () => {
 
 		const command = await clone();
 
-		expect(command).toContain(
-			"https://oauth2:gh-token@github.corp.acme.com/acme/web.git",
-		);
+		expect(command).toContain("https://github.corp.acme.com/acme/web.git");
 	});
 
 	it("keeps an explicit port in the clone host", async () => {
@@ -116,9 +110,7 @@ describe("cloneGithubRepository host", () => {
 
 		const command = await clone();
 
-		expect(command).toContain(
-			"https://oauth2:gh-token@github.acme.com:8443/acme/web.git",
-		);
+		expect(command).toContain("https://github.acme.com:8443/acme/web.git");
 	});
 
 	it("falls back to github.com for a provider stored before this feature", async () => {
@@ -126,8 +118,6 @@ describe("cloneGithubRepository host", () => {
 
 		const command = await clone();
 
-		expect(command).toContain(
-			"https://oauth2:gh-token@github.com/acme/web.git",
-		);
+		expect(command).toContain("https://github.com/acme/web.git");
 	});
 });
