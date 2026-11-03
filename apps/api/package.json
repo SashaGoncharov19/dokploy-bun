@@ -12,13 +12,13 @@
 	"dependencies": {
 		"@dokploy/server": "workspace:*",
 		"@hono/zod-validator": "0.7.6",
-		"hono": "^4.11.7",
-		"inngest": "3.40.1",
+		"hono": "^4.13.5",
+		"inngest": "3.54.0",
 		"pino": "9.4.0",
 		"pino-pretty": "11.2.2",
 		"react": "19.2.7",
 		"react-dom": "19.2.7",
-		"zod": "^4.3.6"
+		"zod": "^4.6.6"
 	},
 	"devDependencies": {
 		"@types/node": "^24.4.0",

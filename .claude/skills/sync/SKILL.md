@@ -64,7 +64,9 @@ The tests fail with `ReferenceError: vi is not defined`.
 grep -rn --exclude=remote-stream.test.ts "\bvi\.\|from \"vitest\"" apps/dokploy/__test__/{logs,registry,requests,api,cluster,templates,backups,services,utils,queues,drop,traefik,server,permissions,wss,dns,compose,git-provider,deploy} 2>/dev/null
 ```
 
-Anything it prints in a ported directory is a silent breakage. Convert it:
+Anything it prints in a ported file is a silent breakage. Files upstream
+*added* show up here too: either port them, or list them in `VITEST_ONLY` in
+`apps/dokploy/__test__/runners.ts` so vitest keeps running them. Convert it:
 `vi.fn` → `jest.fn`, `vi.mock` → `mock.module`, `vi.clearAllMocks` →
 `jest.clearAllMocks`. `env` is the one directory still on vitest - `vi.*` there
 is correct - and `utils/remote-stream.test.ts` is the one file: when a piped-child

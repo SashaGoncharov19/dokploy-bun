@@ -29,20 +29,34 @@ const mockMemberData = (
 let memberToReturn: ReturnType<typeof mockMemberData> =
 	mockMemberData("member");
 
-mock.module("@dokploy/server/db", () => ({
-	db: {
-		query: {
-			member: {
-				findFirst: jest.fn(() => Promise.resolve(memberToReturn)),
-				findMany: jest.fn(() => Promise.resolve([])),
-			},
-			organizationRole: {
-				findFirst: jest.fn(),
-				findMany: jest.fn(() => Promise.resolve([])),
+// Every service/project id used below belongs to the caller's org-1.
+mock.module("@dokploy/server/db", () => {
+	const selectChain = {
+		from: () => selectChain,
+		innerJoin: () => selectChain,
+		where: () => Promise.resolve([{ organizationId: "org-1" }]),
+	};
+	return {
+		db: {
+			select: jest.fn(() => selectChain),
+			query: {
+				member: {
+					findFirst: jest.fn(() => Promise.resolve(memberToReturn)),
+					findMany: jest.fn(() => Promise.resolve([])),
+				},
+				organizationRole: {
+					findFirst: jest.fn(),
+					findMany: jest.fn(() => Promise.resolve([])),
+				},
+				projects: {
+					findFirst: jest.fn(() =>
+						Promise.resolve({ organizationId: "org-1" }),
+					),
+				},
 			},
 		},
-	},
-}));
+	};
+});
 
 const { checkServicePermissionAndAccess, checkServiceAccess } = await import(
 	"@dokploy/server/services/permission"

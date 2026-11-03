@@ -12,6 +12,12 @@ export interface PublicWhitelabelingConfig {
 	errorPageTitle: string | null;
 	errorPageDescription: string | null;
 	footerText: string | null;
+	passwordResetGuide: string | null;
+	supportEmail: string | null;
+	logoLightUrl: string | null;
+	loginLogoLightUrl: string | null;
+	faviconLightUrl: string | null;
+	dualModeBranding: boolean;
 }
 
 /**
@@ -35,6 +41,12 @@ export const DEFAULT_WHITELABELING = {
 	errorPageTitle: null,
 	errorPageDescription: null,
 	footerText: "Dokploy Bun",
+	passwordResetGuide: null,
+	supportEmail: null,
+	logoLightUrl: null,
+	loginLogoLightUrl: null,
+	faviconLightUrl: null,
+	dualModeBranding: false,
 } satisfies PublicWhitelabelingConfig;
 
 /**
@@ -60,7 +72,7 @@ export const withDefaultWhitelabeling = <
 	) as (keyof PublicWhitelabelingConfig)[]) {
 		const value = config?.[key];
 		if (value === undefined || value === null || value === "") {
-			merged[key] = DEFAULT_WHITELABELING[key];
+			Object.assign(merged, { [key]: DEFAULT_WHITELABELING[key] });
 		}
 	}
 	return merged;
@@ -76,5 +88,30 @@ export const getPublicWhitelabelingConfig =
 			return null;
 		}
 		const settings = await getWebServerSettings();
-		return withDefaultWhitelabeling(settings?.whitelabelingConfig);
+		const config = withDefaultWhitelabeling(settings?.whitelabelingConfig);
+
+		return {
+			appName: config.appName,
+			appDescription: config.appDescription,
+			logoUrl: config.logoUrl,
+			loginLogoUrl: config.loginLogoUrl,
+			faviconUrl: config.faviconUrl,
+			customCss: config.customCss,
+			ogImageUrl: config.ogImageUrl,
+			errorPageTitle: config.errorPageTitle,
+			errorPageDescription: config.errorPageDescription,
+			footerText: config.footerText,
+			passwordResetGuide: config.passwordResetGuide ?? null,
+			supportEmail: config.supportEmail ?? null,
+			dualModeBranding: config.dualModeBranding ?? false,
+			logoLightUrl: config.dualModeBranding
+				? (config.logoLightUrl ?? null)
+				: null,
+			loginLogoLightUrl: config.dualModeBranding
+				? (config.loginLogoLightUrl ?? null)
+				: null,
+			faviconLightUrl: config.dualModeBranding
+				? (config.faviconLightUrl ?? null)
+				: null,
+		};
 	};

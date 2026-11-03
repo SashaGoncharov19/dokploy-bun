@@ -1,11 +1,20 @@
+import * as nodeFs from "node:fs";
 import { fs, vol } from "memfs";
+
+// Snapshot before mocking: mock.module is process-global under bun test, and
+// suites that run later in the same process need the real filesystem back.
+const actualFs = { ...nodeFs };
 
 mock.module("node:fs", () => ({
 	...fs,
 	default: fs,
 }));
 
-import { beforeEach, expect, mock, test } from "bun:test";
+afterAll(() => {
+	mock.module("node:fs", () => ({ ...actualFs, default: actualFs }));
+});
+
+import { afterAll, beforeEach, expect, mock, test } from "bun:test";
 import type { FileConfig } from "@dokploy/server";
 import {
 	createDefaultServerTraefikConfig,
@@ -25,6 +34,8 @@ const baseSettings: WebServerSettings = {
 	letsEncryptEmail: null,
 	sshPrivateKey: null,
 	enableDockerCleanup: false,
+	telemetryProviderIds: [],
+	vectorAgentOrganizationId: null,
 	buildsConcurrency: 1,
 	logCleanupCron: null,
 	metricsConfig: {
@@ -62,6 +73,12 @@ const baseSettings: WebServerSettings = {
 		errorPageDescription: null,
 		ogImageUrl: null,
 		footerText: null,
+		passwordResetGuide: null,
+		supportEmail: null,
+		logoLightUrl: null,
+		loginLogoLightUrl: null,
+		faviconLightUrl: null,
+		dualModeBranding: false,
 	},
 	cleanupCacheApplications: false,
 	cleanupCacheOnCompose: false,

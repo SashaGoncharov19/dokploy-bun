@@ -1,5 +1,9 @@
 import { db } from "@dokploy/server/db";
-import { IS_CLOUD, sendInvitationEmail } from "@dokploy/server/index";
+import {
+	deleteOrganization,
+	IS_CLOUD,
+	sendInvitationEmail,
+} from "@dokploy/server/index";
 import { TRPCError } from "@trpc/server";
 import { and, desc, eq, exists } from "drizzle-orm";
 import { nanoid } from "nanoid";
@@ -273,9 +277,7 @@ export const organizationRouter = createTRPCRouter({
 				});
 			}
 
-			const result = await db
-				.delete(organization)
-				.where(eq(organization.id, input.organizationId));
+			const result = await deleteOrganization(input.organizationId);
 
 			await audit(ctx, {
 				action: "delete",
